@@ -120,7 +120,7 @@ void setup() {
     // 1. Escanear bus: int total = scanI2CBus();
     // 2. Si total > 0 y la pantalla se inicializa con initDisplay():
     //    Ejecutar runSystemPOST();
-    // 3. Si no, reportar falla por el Serial Monitor.
+    // 3. Si no reportar falla por el Serial Monitor.
     /* ESCRIBE TU CÓDIGO AQUÍ */
 }
 
