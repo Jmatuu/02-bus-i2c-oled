@@ -10,10 +10,7 @@
 
 ### Checklist de Bloques Técnicos:
 - [ ] **🟢 Bloque 1 (`bloque_1/src/bloque_1.ino`):** Scanner I2C implementado con `Wire.beginTransmission()` y `Wire.endTransmission()`. Detecta la dirección hexadecimal `0x3C` [OK].
-- [ ] **🟡 Bloque 2 (`bloque_2/src/bloque_2.ino`):** Inicialización de pantalla SSD1306 con bomba de carga en `0x3C` y renderizado de cabecera visual con línea divisoria.
-- [ ] **🔵 Bloque 3 (`bloque_3/src/bloque_3.ino`):** Función modular `logBoot()` con alineación dinámica a la derecha usando `display.getCursorY()`.
-- [ ] **🟣 Bloque 4 (`bloque_4/src/bloque_4.ino`):** Secuencia integradora POST secuencial de los 4 subsistemas y mensaje final `>> SISTEMA LISTO <<`.
-- [ ] **Compilación limpia:** Sin errores en PlatformIO / Wokwi Simulator en los bloques completados.
+- [ ] **Compilación limpia:** Sin errores en PlatformIO / Wokwi Simulator.
 - [ ] **Commits Semánticos:** Commits estructurados respetando la convención (`feat:`, `fix:`, `refactor:`, `docs:`).
 
 ---
@@ -32,4 +29,4 @@
 ---
 
 ## 🕊️ Directiva de Entrega Parcial Salesiana ("¡Nunca te quedes con 0!")
-- [ ] ¿Esta entrega es un avance parcial? En caso afirmativo, describe brevemente hasta qué bloque completaste y explica tus aprendizajes en el video screencast para asegurar tus puntos orales.
+- [ ] ¿Esta entrega es un avance parcial? En caso afirmativo, describe brevemente tu avance y explica tus aprendizajes en el video screencast para asegurar tus puntos orales.

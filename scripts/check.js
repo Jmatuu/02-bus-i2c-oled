@@ -33,9 +33,6 @@ console.log(`${c.bold}📁 [1/4] Verificando archivos de configuración y esquem
 const jsonFiles = [
   '02-bus-i2c-oled.code-workspace',
   'bloque_1/diagram.json',
-  'bloque_2/diagram.json',
-  'bloque_3/diagram.json',
-  'bloque_4/diagram.json',
   'package.json'
 ];
 
@@ -58,12 +55,7 @@ jsonFiles.forEach(relPath => {
 
 // 2. Verificar llaves y paréntesis en código de Arduino
 console.log(`\n${c.bold}🧩 [2/4] Verificando balance de sintaxis básica (llaves y paréntesis):${c.reset}`);
-const inoFiles = [
-  'bloque_1/src/bloque_1.ino',
-  'bloque_2/src/bloque_2.ino',
-  'bloque_3/src/bloque_3.ino',
-  'bloque_4/src/bloque_4.ino'
-];
+const inoFiles = ['bloque_1/src/bloque_1.ino'];
 
 inoFiles.forEach(relPath => {
   const fullPath = path.join(rootDir, relPath);
@@ -123,7 +115,7 @@ try {
 
 if (pioAvailable) {
   console.log(`  ${c.green}✔ PlatformIO CLI detectado. Probando compilación...${c.reset}`);
-  ['bloque_1', 'bloque_2', 'bloque_3', 'bloque_4'].forEach(b => {
+  ['bloque_1'].forEach(b => {
     try {
       execSync(`pio run -d ${b}`, { stdio: 'inherit' });
       console.log(`  ${c.green}✔ ${b} compila exitosamente.${c.reset}`);

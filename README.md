@@ -3,12 +3,9 @@
 
 Bienvenido al taller práctico de la Semana 02. En este laboratorio desarrollarás el firmware en código de Arduino para dominar la comunicación I2C y la telemetría gráfica en pantalla OLED SSD1306 del **sistema embebido ESP32**.
 
-Para que no te pierdas y puedas avanzar paso a paso con máxima claridad pedagógica, el taller está dividido en **4 bloques independientes**:
+El taller incluye el siguiente reto práctico:
 
 * 🟢 **Bloque 1:** Escáner de Direcciones de Hardware I2C (Detección de `0x3C`).
-* 🟡 **Bloque 2:** Inicialización de Pantalla OLED SSD1306 & Cabecera Visual.
-* 🔵 **Bloque 3:** Telemetría Modular Reutilizable con la función `logBoot()`.
-* 🟣 **Bloque 4:** Reto Integrador: Auto-diagnóstico POST (*Power-On Self-Test*).
 
 ---
 
@@ -49,34 +46,19 @@ git config --global user.email "tu_correo_registrado@ejemplo.com"
 
 ---
 
-## 📁 Arquitectura del Repositorio Dividida por Bloques
+## 📁 Arquitectura del Repositorio
 
 ```text
 02-bus-i2c-oled/
-├── 02-bus-i2c-oled.code-workspace  <-- Espacio de trabajo oficial para VS Code (4 Bloques)
+├── 02-bus-i2c-oled.code-workspace  <-- Espacio de trabajo oficial para VS Code
 ├── CHEATSHEET_ESTUDIANTE.md        <-- Hoja de trucos y preguntas clave
 ├── LICENSE                         <-- Licencia MIT oficial UETS
 ├── README.md                       <-- Guía de inicio y protocolo de aula
-├── bloque_1/                       <-- 🟢 Reto 01: Escáner I2C
-│   ├── diagram.json                <-- Circuito esquemático Wokwi
-│   ├── platformio.ini              <-- Entorno de compilación ESP32
-│   ├── wokwi.toml                  <-- Configuración del simulador
-│   └── src/bloque_1.ino            <-- Código de Arduino con // TODO:
-├── bloque_2/                       <-- 🟡 Reto 02: Inicialización OLED & Cabecera
-│   ├── diagram.json
-│   ├── platformio.ini
-│   ├── wokwi.toml
-│   └── src/bloque_2.ino
-├── bloque_3/                       <-- 🔵 Reto 03: Telemetría Modular logBoot()
-│   ├── diagram.json
-│   ├── platformio.ini
-│   ├── wokwi.toml
-│   └── src/bloque_3.ino
-└── bloque_4/                       <-- 🟣 Reto 04: Reto Integrador POST Completo
-    ├── diagram.json
-    ├── platformio.ini
-    ├── wokwi.toml
-    └── src/bloque_4.ino
+└── bloque_1/                       <-- 🟢 Reto 01: Escáner I2C
+    ├── diagram.json                <-- Circuito esquemático Wokwi
+    ├── platformio.ini              <-- Entorno de compilación ESP32
+    ├── wokwi.toml                  <-- Configuración del simulador
+    └── src/bloque_1.ino            <-- Código de Arduino con // TODO:
 ```
 
 ---
@@ -85,15 +67,15 @@ git config --global user.email "tu_correo_registrado@ejemplo.com"
 
 > [!TIP]
 > **Abre el archivo \`02-bus-i2c-oled.code-workspace\` en VS Code:**  
-> Ve a **Archivo ➔ Abrir espacio de trabajo desde archivo...** y selecciona `02-bus-i2c-oled.code-workspace` (o haz doble clic sobre él en Windows). Esto cargará de inmediato los 4 bloques como proyectos independientes en PlatformIO.
+> Ve a **Archivo ➔ Abrir espacio de trabajo desde archivo...** y selecciona `02-bus-i2c-oled.code-workspace` (o haz doble clic sobre él en Windows). Esto cargará el bloque como proyecto independiente en PlatformIO.
 
 > [!IMPORTANT]
 > **¿Por qué Wokwi necesita compilación previa con PlatformIO?**  
 > En la extensión de VS Code, Wokwi **no compila código por sí mismo**; es un simulador de hardware que ejecuta el archivo binario (`.pio/build/esp32/firmware.bin`) generado por el compilador de PlatformIO.  
 > Si pulsas *Play* en Wokwi antes de compilar, el simulador reportará que no encuentra el firmware. El orden correcto siempre es:
-> 1. **Escribir el código:** Edita `src/bloque_X.ino` y completa los `// TODO:`.
+> 1. **Escribir el código:** Edita `bloque_1/src/bloque_1.ino` y completa los `// TODO:`.
 > 2. **Compilar con PlatformIO:** Haz clic en el visto **Build (✔)** en la barra azul inferior (o en el icono de la hormiga 🐜 ➔ **PROJECT TASKS** ➔ **esp32** ➔ **Build**). Verifica que la terminal muestre `[SUCCESS]`.
-> 3. **Simular en Wokwi:** Abre el archivo `diagram.json` de tu bloque y pulsa el botón verde **Start Simulation (Play)** (o presiona `F1` ➔ `Wokwi: Start Simulator`).
+> 3. **Simular en Wokwi:** Abre `bloque_1/diagram.json` y pulsa el botón verde **Start Simulation (Play)** (o presiona `F1` ➔ `Wokwi: Start Simulator`).
 > 4. **Verificar Salidas:** Abre el **Serial Monitor** (115200 bps) o mira la pantalla OLED encenderse en la simulación.
 > 5. **Entrega en GitHub:** Guarda tus commits con formato semántico y abre tu Pull Request comparando tu rama `entrega/nombre-apellido` contra la rama `base: main` del docente.
 
@@ -104,17 +86,13 @@ git config --global user.email "tu_correo_registrado@ejemplo.com"
 Este repositorio incluye un **Evaluador Pedagógico Integrado** que revisa tu código en 3 segundos y te muestra qué conceptos de hardware ya dominas y qué detalles te faltan por completar:
 
 ```bash
-# 1. Probar reto por reto (con retroalimentación pedagógica y guía de Wokwi):
+# Probar el reto (con retroalimentación pedagógica y guía de Wokwi):
 pnpm run start:01   # 🟢 Reto 01: Escáner de Hardware I2C (0x3C)
-pnpm run start:02   # 🟡 Reto 02: Inicialización Pantalla OLED & Cabecera
-pnpm run start:03   # 🔵 Reto 03: Telemetría Modular con logBoot()
-pnpm run start:04   # 🟣 Reto 04: Desafío Integrador POST Completo
 
-# 2. Probar TODOS los retos (Reporte formativo y Entrega Parcial Salesiana):
+# Probar el reto (Reporte formativo y Entrega Parcial Salesiana):
 pnpm test
-# (o también: pnpm run test:all)
 
-# 3. Verificar que no existan errores estructurales ni de sintaxis:
+# Verificar que no existan errores estructurales ni de sintaxis:
 pnpm run check
 ```
 
@@ -132,8 +110,8 @@ Al abrir o actualizar tu Pull Request, GitHub Actions ejecuta el evaluador y mue
 
 ## 🕊️ Directiva de Entrega Parcial Salesiana ("¡Nunca te quedes con 0!")
 
-Si la clase concluye y no alcanzaste a terminar los 4 bloques:
-1. Haz commit de tu avance: `git commit -m "feat: avance parcial hasta bloque 02"`
+Si la clase concluye y no alcanzaste a terminar el bloque:
+1. Haz commit de tu avance: `git commit -m "feat: avance parcial del reto I2C"`
 2. Sube los cambios a tu fork y abre el Pull Request.
-3. Graba tu video screencast explicando con honestidad lo que lograste implementar en los bloques resueltos y qué aprendiste.
-4. **Beneficio:** Aseguras los **5.00 puntos de la sustentación oral** más la nota proporcional de los circuitos completados.
+3. Graba tu video screencast explicando con honestidad lo que lograste implementar y qué aprendiste.
+4. **Beneficio:** Aseguras los **5.00 puntos de la sustentación oral** más la nota proporcional del circuito completado.
