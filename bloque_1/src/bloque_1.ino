@@ -1,61 +1,171 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
-#define SERIAL_BAUD 115200      
-#define I2C_SDA_PIN 21
-#define I2C_SCL_PIN 22
-#define I2C_CLOCK_SPEED 400000 // 400 kHz (Modo Rápido)
-#define OLED_I2C_ADDR 0x3C     // Dirección física esperada de la pantalla OLED
 
-void setup() {
-    Serial.begin(SERIAL_BAUD);
-    delay(1000);
-    Serial.println("\n========================================================");
-    Serial.println("  [BLOQUE 1] ESCÁNER DE DIRECCIONES DE HARDWARE I2C     ");
-    Serial.println("========================================================");
+#define OLED_WIDTH 128
+#define OLED_HEIGHT 64
+#define OLED_ADDRESS 0x3C
 
-    // feat: Inicializar el bus I2C en los pines SDA y SCL del ESP32.
-    // Pregunta Guía: ¿Qué función de la librería Wire recibe (SDA_PIN, SCL_PIN)?
-    // Pista: Usa Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
-    /* ESCRIBE TU CÓDIGO AQUÍ. */
-        Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
-        Wire.setClock(I2C_CLOCK_SPEED);
-    Serial.println("[I2C] Bus configurado en SDA:GPIO21, SCL:GPIO22 a 400kHz.\n");
-    Serial.println("--- INICIANDO BARRIDO DE DIRECCIONES (0x01 .. 0x7E) ---");
+Adafruit_SSD1306 display(
+    OLED_WIDTH,
+    OLED_HEIGHT,
+    &Wire,
+    -1
+);
 
-    int devicesFound = 0;
+const int RELE_M1_ADELANTE = 25;  // LED rojo
+const int RELE_M1_ATRAS    = 26;  // LED naranja
+const int RELE_M2_ADELANTE = 27;  // LED azul
+const int RELE_M2_ATRAS    = 14;  // LED verde
 
-    // feat: Recorrer las direcciones válidas de 7 bits (del 1 al 126).
-    for (byte address = 1; address < 127; address++) {
 
-        // feat: Tocar la puerta del periférico:
-        // 1. Iniciar transmisión con Wire.beginTransmission(address);
-        // 2. Finalizar transmisión capturando el byte de error: byte error = Wire.endTransmission();
-        /* ESCRIBE TU CÓDIGO AQUÍ */
-            Wire.beginTransmission(address);
-            byte error = Wire.endTransmission();
-        // feat: Evaluar la respuesta del periférico:
-        // Pregunta Guía: ¿Qué valor devuelve Wire.endTransmission() cuando el periférico responde con ACK (Presente)?
-         if (error == 0) {
-           Serial.printf("[I2C] Dispositivo detectado en: 0x%02X ", address);
-            if (address == OLED_I2C_ADDR) {
-                Serial.println("➔ [Display OLED SSD1306] [OK]");
-             } else {
-             Serial.println("➔ [Periférico Desconocido]");
-             }
-             devicesFound++;
-        }
-    }
+const int RELE_ON  = HIGH;
+const int RELE_OFF = LOW;
 
-    if (devicesFound == 0) {
-        Serial.println("[I2C] ❌ No se detectaron dispositivos en el bus.");
-        Serial.println("[DIAGNÓSTICO] Revisa que SDA esté en GPIO21, SCL en GPIO22, 3V3 y GND.");
-    } else {
-        Serial.printf("\n--- BARRIDO FINALIZADO: %d dispositivo(s) encontrado(s) ---\n", devicesFound);
+bool oledDisponible = false;
+
+void detenerMotores() {
+    digitalWrite(RELE_M1_ADELANTE, RELE_OFF);
+    digitalWrite(RELE_M1_ATRAS, RELE_OFF);
+    digitalWrite(RELE_M2_ADELANTE, RELE_OFF);
+    digitalWrite(RELE_M2_ATRAS, RELE_OFF);
+}
+
+void mostrarMovimiento(const char* movimiento) {
+    Serial.print(F("[MOVIMIENTO] "));
+    Serial.println(movimiento);
+
+    if (oledDisponible) {
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(SSD1306_WHITE);
+        display.setCursor(0, 0);
+
+        display.println(F("ROBOT ESP32"));
+        display.println(F("----------------"));
+        display.print(F("Movimiento: "));
+        display.println(movimiento);
+
+        display.display();
     }
 }
 
+void adelante() {
+    detenerMotores();
+
+    digitalWrite(RELE_M1_ADELANTE, RELE_ON);
+    digitalWrite(RELE_M2_ADELANTE, RELE_ON);
+
+    mostrarMovimiento("ADELANTE");
+}
+
+void atras() {
+    detenerMotores();
+
+    digitalWrite(RELE_M1_ATRAS, RELE_ON);
+    digitalWrite(RELE_M2_ATRAS, RELE_ON);
+
+    mostrarMovimiento("ATRAS");
+}
+
+void derecha() {
+    detenerMotores();
+
+    digitalWrite(RELE_M1_ADELANTE, RELE_ON);
+    digitalWrite(RELE_M2_ATRAS, RELE_ON);
+
+    mostrarMovimiento("DERECHA");
+}
+
+void izquierda() {
+    detenerMotores();
+
+    digitalWrite(RELE_M1_ATRAS, RELE_ON);
+    digitalWrite(RELE_M2_ADELANTE, RELE_ON);
+
+    mostrarMovimiento("IZQUIERDA");
+}
+
+void detener() {
+    detenerMotores();
+    mostrarMovimiento("DETENIDO");
+}
+
+void mostrarAyuda() {
+    Serial.println();
+    Serial.println(F("===== CONTROL DEL ROBOT ====="));
+    Serial.println(F("W = Adelante (rojo + azul)"));
+    Serial.println(F("S = Atras (naranja + verde)"));
+    Serial.println(F("D = Derecha (rojo + verde)"));
+    Serial.println(F("A = Izquierda (naranja + azul)"));
+    Serial.println(F("X = Detener"));
+    Serial.println(F("============================="));
+}
+
+void setup() {
+    Serial.begin(115200);
+
+    pinMode(RELE_M1_ADELANTE, OUTPUT);
+    pinMode(RELE_M1_ATRAS, OUTPUT);
+    pinMode(RELE_M2_ADELANTE, OUTPUT);
+    pinMode(RELE_M2_ATRAS, OUTPUT);
+
+    // Apagar todo antes de iniciar
+    detenerMotores();
+
+    // Iniciar I2C para la OLED
+    Wire.begin(21, 22);
+
+    if (display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
+        oledDisponible = true;
+        mostrarMovimiento("LISTO");
+    } else {
+        Serial.println(F("[ERROR] No se pudo iniciar la OLED"));
+    }
+
+    mostrarAyuda();
+}
+
 void loop() {
-    // El escaneo de hardware se ejecuta una sola vez al encender.
-    delay(1000);
+    if (Serial.available() > 0) {
+        char comando = (char)Serial.read();
+
+        if (comando >= 'a' && comando <= 'z') {
+            comando = comando - ('a' - 'A');
+        }
+
+        switch (comando) {
+            case 'W':
+                adelante();
+                break;
+
+            case 'S':
+                atras();
+                break;
+
+            case 'D':
+                derecha();
+                break;
+
+            case 'A':
+                izquierda();
+                break;
+
+            case 'X':
+                detener();
+                break;
+
+            case '\r':
+            case '\n':
+            case ' ':
+                break;
+
+            default:
+                Serial.print(F("[ERROR] Comando desconocido: "));
+                Serial.println(comando);
+                break;
+        }
+    }
 }
