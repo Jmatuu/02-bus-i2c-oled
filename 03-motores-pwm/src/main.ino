@@ -135,13 +135,13 @@ void loop() {
         }
     }
 
-    // Al terminar el giro, continúa avanzando automáticamente.
+     // Al terminar el giro, el robot queda detenido.
     if (giroEnCurso && millis() - inicioGiro >= DURACION_GIRO) {
-        giroEnCurso = false;
-        movimientoActual = 'W';
+    giroEnCurso = false;
+    movimientoActual = 'X';
 
-        adelante(velocidad);
+    detener();
 
-        Serial.println(F("Giro terminado: continuando hacia adelante."));
-    }
+    Serial.println(F("Giro terminado: robot detenido."));
+}
 }
